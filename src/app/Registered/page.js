@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useLoading } from "../_components/Loading";
@@ -9,45 +9,64 @@ import { useLoading } from "../_components/Loading";
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const router = useRouter();
   const { data: session } = useSession();
   const { setLoading } = useLoading();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
-
-    const data = await res.json();
+    setError("");
+    setLoading(true);
 
     try {
-      await fetch("/api/email", {
+      // 1️⃣ Create the account
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: form.email,
-          subject: "🎉 welcome to Wanderlust!",
-          message: `Hey ${session?.user?.name || "Traveler"}, your account has been successfully created. Get ready to explore!`,
-        }),
+        body: JSON.stringify(form),
       });
-      toast.success("📧 Email sent");
-    } catch (err) {
-      toast.error("❌ Failed to send email", err);
-    }
 
-    if (!res.ok) {
-      setError(data.error);
-    } else {
-      setSuccess("Account created! Redirecting...");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to register");
+        toast.error(data.error || "Registration failed");
+        return;
+      }
+
       toast.success("✅ Account created successfully");
 
-      setTimeout(() => router.push("/signIN"), 2000);
+      // 2️⃣ Send welcome email
+      try {
+        const emailRes = await fetch("/api/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: form.email,
+            subject: "🎉 Welcome to Wanderlust!",
+            message: `Hey ${form.name || "Traveler"}, your account has been successfully created. Get ready to explore!`,
+          }),
+        });
+
+        if (emailRes.ok) {
+          toast.success("📧 Welcome email sent");
+        } else {
+          toast.error("❌ Failed to send welcome email");
+        }
+      } catch (err) {
+        toast.error("❌ Failed to send welcome email");
+      }
+
+      // 3️⃣ Redirect after a short delay
+      setTimeout(() => router.push("/signIN"), 1500);
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f4f4f4] to-[#fef9e7]"
@@ -56,7 +75,7 @@ export default function Register() {
           "url('https://cdn.pixabay.com/photo/2021/11/15/05/54/couple-6796433_1280.jpg')",
       }}
     >
-      <div className="flex flex-col md:flex-row w-[95%] max-w-6xl  overflow-hidden shadow-lg bg-white">
+      <div className="flex flex-col md:flex-row w-[95%] max-w-6xl overflow-hidden shadow-lg bg-white">
         {/* Left: Form */}
         <form
           onSubmit={handleSubmit}
@@ -74,7 +93,7 @@ export default function Register() {
           <p className="text-gray-500">Sign up to start your Trips</p>
 
           <input
-            required={true}
+            required
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             type="text"
@@ -82,7 +101,7 @@ export default function Register() {
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
           <input
-            required={true}
+            required
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             type="email"
@@ -90,7 +109,7 @@ export default function Register() {
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
           <input
-            required={true}
+            required
             autoComplete="new-password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -99,7 +118,12 @@ export default function Register() {
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
 
-          <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-3 rounded-xl transition">
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-3 rounded-xl transition"
+          >
             Submit
           </button>
 
@@ -118,7 +142,6 @@ export default function Register() {
             backgroundImage: `url('https://cdn.pixabay.com/photo/2017/06/22/09/29/istanbul-2430072_1280.jpg')`,
           }}
         >
-          {/* Meeting Tags */}
           <div className="absolute top-6 left-6 bg-black/70 text-white text-xs px-3 py-1 rounded-full shadow">
             AI Trip Generator for Quick Planning
           </div>
@@ -128,21 +151,21 @@ export default function Register() {
               <Image
                 width={400}
                 height={400}
-                alt="car"
+                alt="user1"
                 src="https://randomuser.me/api/portraits/women/68.jpg"
                 className="w-6 h-6 rounded-full"
               />
               <Image
                 width={400}
                 height={400}
-                alt="car"
+                alt="user2"
                 src="https://randomuser.me/api/portraits/men/32.jpg"
                 className="w-6 h-6 rounded-full"
               />
               <Image
                 width={400}
                 height={400}
-                alt="car"
+                alt="user3"
                 src="https://randomuser.me/api/portraits/women/12.jpg"
                 className="w-6 h-6 rounded-full"
               />

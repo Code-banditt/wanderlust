@@ -149,12 +149,16 @@ export default function TripsPage() {
                 >
                   <div className="p-4">
                     <Image
-                      src={trip.places?.[0]?.image || "/placeholder.jpg"}
+                      src={
+                        trip.places?.[0]?.image ||
+                        "https://images.unsplash.com/photo-1473625247510-8ceb1760943f?q=80&w=1111&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      }
                       alt={trip.places?.[0]?.name || "Trip Image"}
                       width={300}
                       height={200}
                       className="w-full h-48 object-cover mb-4"
                     />
+
                     <h3 className="text-lg font-semibold">
                       {trip.destination?.name || "Unknown"}
                     </h3>

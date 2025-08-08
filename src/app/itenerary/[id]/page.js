@@ -126,7 +126,7 @@ export default function TripDetails() {
             <p className="max-w-2xl text-lg text-gray-100">
               The Big Apple is a melting pot of different cultures...
             </p>
-            <div className="mt-6 bg-white/90 backdrop-blur-md rounded-xl flex items-center gap-4 px-6 py-4 w-fit shadow-md">
+            <div className="mt-6  bg-white/90 backdrop-blur-md rounded-xl flex items-center gap-4 px-6 py-4 w-fit shadow-md">
               <div className="text-black text-sm">
                 <p className="font-medium">When is your trip?</p>
                 <input

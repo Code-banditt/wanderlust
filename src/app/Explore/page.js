@@ -17,14 +17,13 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCountries, setSelectedContinent } from "../store/ContinentSlice";
 import ContCrd from "../_components/ContinentCrds";
-
 import { useRouter } from "next/navigation";
 import HeaderMinimal from "../_components/HeaderMinimal";
 
 export default function ExplorePage() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { countriesByContinent, selectedContinent, status } = useSelector(
+  const { countriesByContinent, selectedContinent } = useSelector(
     (state) => state.continent
   );
 
@@ -42,9 +41,9 @@ export default function ExplorePage() {
         <HeaderMinimal />
       </div>
 
-      <div className="flex min-h-screen bg-[#f5f7fa] font-sans">
-        {/* Left Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 flex flex-col p-6">
+      <div className="flex flex-col lg:flex-row min-h-screen bg-[#f5f7fa] font-sans">
+        {/* Left Sidebar - Hidden on small screens */}
+        <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 flex-col p-6">
           <div className="flex items-center gap-2 mb-10">
             <div className="w-10 h-10 bg-black text-white flex items-center justify-center rounded-full font-bold text-lg">
               W
@@ -55,7 +54,6 @@ export default function ExplorePage() {
             <a href="#" className="flex items-center gap-3 hover:text-blue-600">
               <MessageCircle size={18} /> Chat
             </a>
-
             <a href="#" className="flex items-center gap-3 hover:text-blue-600">
               <Map size={18} /> My Map
             </a>
@@ -81,7 +79,7 @@ export default function ExplorePage() {
         </aside>
 
         {/* Main Content */}
-        <main className="bg-gray-100 flex-1 px-10 py-8 overflow-y-auto">
+        <main className="bg-gray-100 flex-1 px-6 py-8 overflow-y-auto">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-1">
               Explore The Globe
@@ -92,9 +90,8 @@ export default function ExplorePage() {
           </div>
 
           {/* Tabs */}
-          <div className=" flex w-full flex-col items-center gap-4 mb-6">
+          <div className="flex w-full flex-col items-center gap-4 mb-6">
             <div className="flex gap-8">
-              {" "}
               <button className="text-blue-600 border-b-2 border-black pb-1">
                 Continents
               </button>
@@ -106,21 +103,18 @@ export default function ExplorePage() {
             <input
               type="text"
               placeholder="Search Places"
-              className=" border rounded-lg px-4 py-2 text-sm w-full text-gray-700"
+              className="border rounded-lg px-4 py-2 text-sm w-full text-gray-700"
             />
           </div>
 
-          {/* Blog Cards */}
-          <div>
-            <ContCrd handleSelect={handleSelect} />
-          </div>
+          <ContCrd handleSelect={handleSelect} />
         </main>
 
-        {/* Right Sidebar */}
-        <aside className="w-96 h-screen border-l shadow-md bg-gray-100 p-6 hidden lg:block overflow-y-auto">
+        {/* Right Sidebar - Visible on all screens */}
+        <aside className="w-full lg:w-96 border-l shadow-md bg-gray-100 p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">
-              {selectedContinent || "Select a continent"} Countries{" "}
+              {selectedContinent || "Select a continent"} Countries
             </h3>
           </div>
 

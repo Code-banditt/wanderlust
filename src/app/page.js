@@ -40,7 +40,7 @@ export default function Home() {
               Trips, Tales & Trust — Plan smarter. Travel better.
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <Link
                 href="/Create"
                 className="bg-gray-900 hover:bg-gray-600 text-white px-6 py-3 rounded-full text-lg"

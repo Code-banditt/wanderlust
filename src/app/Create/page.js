@@ -16,6 +16,7 @@ export default function CreateTripPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [userBudget, setUserBudget] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const { data: session, status } = useSession();
@@ -30,6 +31,7 @@ export default function CreateTripPage() {
   //create trip handler and email notification
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsCreating(true); // Start loading
 
     const tripData = {
       destination: { name: destination, image },
@@ -46,9 +48,7 @@ export default function CreateTripPage() {
     if (createTrip.fulfilled.match(resultAction)) {
       const createdTrip = resultAction.payload;
       toast.success("Trip Created");
-      console.log("✅ Created trip:", createdTrip);
 
-      // ✅ Send welcome/booking email
       try {
         await fetch("/api/email", {
           method: "POST",
@@ -71,8 +71,9 @@ export default function CreateTripPage() {
       console.error("❌ Trip creation failed:", resultAction);
       toast.error(resultAction.payload || "Error creating trip");
     }
-  };
 
+    setIsCreating(false); // Stop loading
+  };
   const handleDestinationSelect = (item) => {
     setDestination(item.name);
 
@@ -191,9 +192,14 @@ export default function CreateTripPage() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r  from-gray-600 to-gray-800 text-white font-semibold py-3 rounded-xl hover:opacity-90 transition cursor-pointer"
+                  disabled={isCreating}
+                  className={`w-full bg-gradient-to-r from-gray-600 to-gray-800 text-white font-semibold py-3 rounded-xl transition cursor-pointer ${
+                    isCreating
+                      ? "opacity-70 cursor-not-allowed"
+                      : "hover:opacity-90"
+                  }`}
                 >
-                  Create Trip
+                  {isCreating ? "Creating..." : "Create Trip"}
                 </button>
               </div>
             </form>
