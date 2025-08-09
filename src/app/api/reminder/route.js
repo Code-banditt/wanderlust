@@ -1,12 +1,19 @@
-// app/api/send-reminder-emails/route.js
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb"; // your MongoDB connection
-import Trip from "@/models/tripModels"; // adjust path as needed
-import User from "@/models/userModel"; // assuming Trip ref = User
-import { Resend } from "resend";
+import { connectDB } from "@/lib/mongodb";
+import Trip from "@/models/tripModels";
+import User from "@/models/userModel";
+import nodemailer from "nodemailer";
+
 export const dynamic = "force-dynamic";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configure Gmail transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER, // your Gmail address
+    pass: process.env.GMAIL_APP_PASS, // the 16-char App Password
+  },
+});
 
 export async function GET() {
   try {
@@ -17,7 +24,7 @@ export async function GET() {
     tomorrow.setHours(0, 0, 0, 0);
 
     const nextDay = new Date(tomorrow);
-    nextDay.setDate(tomorrow.getDate() + 1); // start of day after tomorrow
+    nextDay.setDate(tomorrow.getDate() + 1);
 
     // Find trips happening tomorrow
     const trips = await Trip.find({
@@ -30,15 +37,19 @@ export async function GET() {
     const sendEmailPromises = trips.map(async (trip) => {
       if (!trip.user?.email) return;
 
-      return resend.emails.send({
-        from: "reminder@wanderlust.com",
+      const mailOptions = {
+        from: `"Wanderlust" <${process.env.GMAIL_USER}>`,
         to: trip.user.email,
         subject: `Reminder: Your trip to ${trip.destination} is tomorrow!`,
-        html: `<p>Hey ${trip.user.name || "there"},</p>
-               <p>This is a reminder that your trip to <strong>${trip.destination}</strong> is scheduled for tomorrow.</p>
-               <p>Safe travels! ✈️</p>
-               <p>— Wanderlust Team</p>`,
-      });
+        html: `
+          <p>Hey ${trip.user.name || "there"},</p>
+          <p>This is a reminder that your trip to <strong>${trip.destination}</strong> is scheduled for tomorrow.</p>
+          <p>Safe travels! ✈️</p>
+          <p>— Wanderlust Team</p>
+        `,
+      };
+
+      return transporter.sendMail(mailOptions);
     });
 
     await Promise.all(sendEmailPromises);

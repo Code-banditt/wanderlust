@@ -1,3 +1,4 @@
+// app/api/sendEmail/route.js
 import { sendEmail } from "@/app/_Helper Functions/sendEmail";
 export const dynamic = "force-dynamic";
 

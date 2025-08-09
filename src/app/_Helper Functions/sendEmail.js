@@ -1,11 +1,19 @@
 // lib/email.js
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from "nodemailer";
 
 export async function sendEmail({ to, subject, html }) {
-  return await resend.emails.send({
-    from: "onboarding@resend.dev", // ✅ only works in sandbox/dev
+  // Create transporter using Gmail SMTP
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER, // your Gmail address
+      pass: process.env.GMAIL_APP_PASS, // app password (not normal password)
+    },
+  });
+
+  // Send email
+  return await transporter.sendMail({
+    from: `"Wanderlust" <${process.env.GMAIL_USER}>`,
     to,
     subject,
     html,

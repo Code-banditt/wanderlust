@@ -20,7 +20,7 @@ export default function ProductCard({ countryinfo, image, onselect }) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90 group-hover:opacity-100 transition duration-500" />
 
       {/* Hover Info */}
-      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
+      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center text-white transition-all duration-300">
         <h2 className="text-lg font-light">{description}</h2>
         <div className=" text-black rounded-full p-2 hover:bg-gray-200 transition">
           <Button

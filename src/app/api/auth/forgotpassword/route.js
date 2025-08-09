@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/userModel";
 import crypto from "crypto";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 export async function POST(req) {
-  if (!process.env.RESEND_API_KEY) {
-    console.error("RESEND_API_KEY not defined");
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASS) {
+    console.error("Gmail credentials not defined");
     return NextResponse.json(
       { message: "Server configuration error" },
       { status: 500 }
@@ -14,49 +14,54 @@ export async function POST(req) {
   }
 
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
     await connectDB();
     const { email } = await req.json();
 
+    // Check if user exists
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return NextResponse.json(
         { message: "Email not found." },
         { status: 404 }
       );
+    }
 
     // Generate reset token
     const token = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
+    // Save token and expiration in DB
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpires = Date.now() + 1000 * 60 * 15; // 15 minutes
     await user.save();
 
+    // Build reset link
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const resetUrl = `${baseUrl}/reset-password?token=${token}&email=${user.email}`;
+    const resetUrl = `${baseUrl}/resetPassword?token=${token}&email=${user.email}`;
 
-    try {
-      await resend.emails.send({
-        from: "YourApp <onboarding@resend.dev>",
-        to: email,
-        subject: "Reset your password",
-        html: `
-          <h2>Reset Password</h2>
-          <p>You requested a password reset. Click the link below to proceed:</p>
-          <a href="${resetUrl}">${resetUrl}</a>
-          <p>This link will expire in 15 minutes.</p>
-        `,
-      });
-    } catch (err) {
-      console.error("Email send failed:", err);
-      return NextResponse.json(
-        { message: "Failed to send reset email" },
-        { status: 500 }
-      );
-    }
+    // Gmail transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASS,
+      },
+    });
 
-    return NextResponse.json({ message: "Reset link sent." });
+    // Send email
+    await transporter.sendMail({
+      from: `"WanderLust" <${process.env.GMAIL_USER}>`,
+      to: email,
+      subject: "Reset your password",
+      html: `
+        <h2>Password Reset</h2>
+        <p>You requested a password reset. Click the link below:</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>This link expires in 15 minutes.</p>
+      `,
+    });
+
+    return NextResponse.json({ message: "Reset link sent to your email." });
   } catch (error) {
     console.error("Forgot password error:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
