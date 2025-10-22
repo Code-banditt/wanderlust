@@ -23,6 +23,7 @@ const nextConfig = {
       "img.freepik.com",
       "pexels.com",
       "dynamic-media-cdn.tripadvisor.com",
+      "pikaso.cdnpk.net",
     ],
   },
 };

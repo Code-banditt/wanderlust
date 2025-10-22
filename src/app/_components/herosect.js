@@ -11,7 +11,7 @@ export default function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+          src="https://pikaso.cdnpk.net/private/production/2586490291/render.png?token=exp=1761350400~hmac=452a1ffb488ec77d44e6af2f3d6d563572e8f3a7050c12f5ccc8f802b237f18e&preview=1"
           alt="Wanderlust Background"
           fill
           priority
