@@ -29,7 +29,7 @@ export default function TopDestinations() {
 
   return (
     <section className="px-4 py-6">
-      <h3 className="text-[#1C160C] text-lg font-bold leading-tight tracking-[-0.015em] pb-2">
+      <h3 className="text-[#3abff8] text-lg font-bold leading-tight tracking-[-0.015em] pb-2">
         Top Destinations
       </h3>
 

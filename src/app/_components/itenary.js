@@ -79,7 +79,7 @@ export default function ItineraryBuilder() {
           Smart itinerary builder
         </h2>
 
-        <h1 className="text-[#1C160C] text-4xl sm:text-3xl font-black max-w-3xl mb-10">
+        <h1 className="text-[#3abff8] text-4xl sm:text-3xl font-black max-w-3xl mb-10">
           Create a detailed itinerary for your trip
         </h1>
 

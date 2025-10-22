@@ -108,21 +108,6 @@ export default function TripSummary({
             </span>
           </div>
         </div>
-
-        <div className="mt-4 flex gap-4">
-          <button
-            onClick={increaseBudget}
-            className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-green-600"
-          >
-            Increase Budget
-          </button>
-          <button
-            onClick={decreaseBudget}
-            className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-red-600"
-          >
-            Decrease Budget
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -52,7 +52,7 @@ export default function Header() {
               />
             </svg>
           </div>
-          <h2 className="text-black text-lg font-bold leading-tight tracking-[-0.015em]">
+          <h2 className="text-[#3abff8] text-lg font-bold leading-tight tracking-[-0.015em]">
             Wanderlust
           </h2>
         </Link>
